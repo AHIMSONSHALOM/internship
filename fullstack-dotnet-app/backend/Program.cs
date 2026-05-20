@@ -2,6 +2,13 @@ using backend.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
@@ -19,6 +26,8 @@ app.UseCors(p => p
     .AllowAnyHeader()
     .AllowAnyMethod()
 );
+
+app.UseCors("AllowAll");
 
 app.MapControllers();
 

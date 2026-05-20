@@ -1,14 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using backend.Models;
 
-namespace backend.Data;
-
-public class ApplicationDbContext : DbContext
+namespace backend.Data
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
+    public class ApplicationDbContext : DbContext
     {
-    }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+        }
 
-    public DbSet<Product> T_PRODUCTS { get; set; }
+        // This line is crucial! It links your C# model to the database
+        public DbSet<Product> Products { get; set; } = null!;
+    }
 }

@@ -132,3 +132,4 @@ C:\Users\Aspl-Training\Desktop\fullstack-dotnet-app\fullstack-dotnet-app\backend
 C:\Users\Aspl-Training\Desktop\fullstack-dotnet-app\fullstack-dotnet-app\backend\obj\Debug\net8.0\backend.pdb
 C:\Users\Aspl-Training\Desktop\fullstack-dotnet-app\fullstack-dotnet-app\backend\obj\Debug\net8.0\backend.genruntimeconfig.cache
 C:\Users\Aspl-Training\Desktop\fullstack-dotnet-app\fullstack-dotnet-app\backend\obj\Debug\net8.0\ref\backend.dll
+C:\Users\Aspl-Training\Desktop\fullstack-dotnet-app\fullstack-dotnet-app\backend\obj\Debug\net8.0\backend.sourcelink.json

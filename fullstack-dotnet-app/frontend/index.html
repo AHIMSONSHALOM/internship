@@ -5,23 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Management Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; }
-        .btn-green { background-color: #4CAF50; color: white; }
-        .btn-green:hover { background-color: #43a047; color: white; }
-        .filter-sidebar { background-color: #ffffff; border-right: 1px solid #dee2e6; min-height: 100vh; }
-        
-        /* Layout Container for login screens */
-        .login-container {
-            max-width: 400px;
-            margin-top: 8%;
-        }
-    </style>
+    <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
 
     <div class="container d-flex flex-column align-items-center">
-        
         <div id="loginPage" class="card login-container shadow p-4 bg-white rounded border w-100">
             <h3 class="text-center mb-4 fw-bold text-dark">Staff Login</h3>
             <div id="loginError" class="alert alert-danger d-none" role="alert">
@@ -54,90 +42,224 @@
                 <label class="form-label small fw-semibold">New Password</label>
                 <input type="password" id="resetNewPass" class="form-control" placeholder="Enter new password">
             </div>
-            <button onclick="handlePasswordReset()" class="btn btn-green w-100 fw-bold mb-2">Apply Reset</button>
+            <div class="btn btn-green w-100 fw-bold mb-2" onclick="handlePasswordReset()">Apply Reset</div>
             <button onclick="showSection('loginPage')" class="btn btn-light w-100 btn-sm border">Back to Login</button>
         </div>
-
     </div>
 
     <div id="dashboardPage" class="container-fluid d-none">
-        <div class="row bg-white p-3 border-bottom align-items-center">
-            <div class="col-md-8 d-flex gap-2">
-                <button class="btn btn-green fw-semibold">Add Row</button>
-                <button class="btn btn-green fw-semibold">Download Template</button>
-                <button class="btn btn-green fw-semibold">Import</button>
-                <button class="btn btn-green fw-semibold">Export</button>
+        <div class="row bg-white p-3 border-bottom align-items-center shadow-sm">
+            <div class="col-lg-5 col-md-12 d-flex gap-2 mb-2 mb-lg-0">
+                <button class="btn btn-green fw-semibold" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Row</button>
+                <button onclick="downloadCSVTemplate()" class="btn btn-purple fw-semibold">Template</button>
+                <button onclick="document.getElementById('csvFileInput').click()" class="btn btn-purple fw-semibold">Import</button>
+                <input type="file" id="csvFileInput" accept=".csv" class="d-none" onchange="importCSVFile(event)">
+                <button onclick="exportToCSV()" class="btn btn-purple fw-semibold">Export</button>
             </div>
-            <div class="col-md-4 d-flex justify-content-end gap-2">
-                <button class="btn btn-green fw-semibold">Compare</button>
-                <button class="btn btn-green fw-semibold">Email</button>
+            
+            <div class="col-lg-4 col-md-7 mb-2 mb-md-0">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0">🔍</span>
+                    <input type="text" id="tableSearchInput" class="form-control border-start-0 ps-0" placeholder="Search products by name or brand..." onkeyup="handleLiveSearch()">
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-5 d-flex justify-content-end gap-2">
+                <button onclick="handleProductComparison()" class="btn btn-green fw-semibold">Compare</button>
+                <button onclick="openEmailModal()" class="btn btn-green fw-semibold">Email</button>
                 <button onclick="logout()" class="btn btn-outline-danger fw-semibold">Logout</button>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-md-3 p-4 filter-sidebar">
-                <h5 class="mb-4 text-secondary">Filters</h5>
+            <div class="col-md-3 col-lg-2 p-3 filter-sidebar">
+                <h5 class="mb-4 text-secondary fw-bold text-uppercase small tracking-wider">Filters Matrix</h5>
                 
                 <div class="mb-3">
-                    <button class="btn btn-light w-100 text-start fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#brandFilter">
-                        + Brands
+                    <button class="btn btn-filter-toggle w-100 text-start fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#categoryFilter">
+                        📦 Categories
+                    </button>
+                    <div class="collapse show mt-2 ps-2" id="categoryFilter">
+                        <div class="form-check">
+                            <input class="form-check-input category-checkbox" type="checkbox" id="catMobile" value="Mobile Phone">
+                            <label class="form-check-label small" for="catMobile">Mobile Phones</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input category-checkbox" type="checkbox" id="catLaptop" value="Laptop / PC">
+                            <label class="form-check-label small" for="catLaptop">Laptops / PC</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input category-checkbox" type="checkbox" id="catAppliance" value="Home Appliance">
+                            <label class="form-check-label small" for="catAppliance">Home Appliances</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input category-checkbox" type="checkbox" id="catFootwear" value="Footwear">
+                            <label class="form-check-label small" for="catFootwear">Footwear</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <button class="btn btn-filter-toggle w-100 text-start fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#brandFilter">
+                        📁 Brands
                     </button>
                     <div class="collapse show mt-2 ps-2" id="brandFilter">
-                        <div class="form-check"><input class="form-check-input" type="checkbox" id="b1"><label class="form-check-label">Samsung</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" id="b2"><label class="form-check-label">Apple</label></div>
-                        <div class="form-check"><input class="form-check-input" type="checkbox" id="b3"><label class="form-check-label">Google</label></div>
+                        <div id="dynamicBrandsContainer">
+                            <p class="text-muted small">Select a category first...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <button class="btn btn-filter-toggle w-100 text-start fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#priceFilter">
+                        💰 Price Range
+                    </button>
+                    <div class="collapse show mt-2 ps-2" id="priceFilter">
+                        <input type="range" class="form-range" min="0" max="200000" step="5000" id="priceRange" value="200000">
+                        <div class="d-flex gap-1 mt-2">
+                            <div>
+                                <label class="small text-muted">Min (Rs.)</label>
+                                <input type="number" id="minPriceInput" class="form-control form-control-sm" value="0" oninput="applyActiveFilters()">
+                            </div>
+                            <div>
+                                <label class="small text-muted">Max (Rs.)</label>
+                                <input type="number" id="maxPriceInput" class="form-control form-control-sm" value="200000" oninput="syncSliderFromInput()">
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <button class="btn btn-light w-100 text-start fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#priceFilter">
-                        + Price Range
+                    <button class="btn btn-filter-toggle w-100 text-start fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#ratingFilter">
+                        ⭐ Ratings
                     </button>
-                    <div class="collapse show mt-2 ps-2" id="priceFilter">
-                        <input type="range" class="form-range" min="0" max="100000" id="priceRange">
-                        <div class="d-flex gap-2 mt-2">
-                            <input type="text" class="form-control form-control-sm" placeholder="Min">
-                            <input type="text" class="form-control form-control-sm" placeholder="Max">
+                    <div class="collapse show mt-2 ps-2" id="ratingFilter">
+                        <div class="form-check">
+                            <input class="form-check-input rating-checkbox" type="checkbox" id="r45" value="4.5">
+                            <label class="form-check-label small" for="r45">⭐⭐⭐⭐½ &amp; Up</label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input rating-checkbox" type="checkbox" id="r40" value="4.0">
+                            <label class="form-check-label small" for="r40">⭐⭐⭐⭐☆ &amp; Up</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input rating-checkbox" type="checkbox" id="r35" value="3.5">
+                            <label class="form-check-label small" for="r35">⭐⭐⭐½☆ &amp; Up</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adminFilterSection" class="mb-3 d-none">
+                    <button class="btn btn-orange w-100 text-start fw-bold text-white mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#adminControls">
+                        ⚙️ Admin Controls
+                    </button>
+                    <div class="collapse show mt-2 ps-2" id="adminControls">
+                        <button onclick="filterLowStockAdmin()" class="btn btn-sm btn-outline-danger w-100 fw-semibold mb-1">Show Low Stock</button>
+                        <button onclick="clearAllFilters()" class="btn btn-sm btn-outline-secondary w-100 fw-semibold mt-1">Clear Filters</button>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-9 p-4">
+            <div class="col-md-9 col-lg-10 p-4">
                 <div class="table-responsive bg-white shadow-sm rounded border">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-hover align-middle mb-0 custom-data-table">
                         <thead class="table-light">
                             <tr>
-                                <th style="width: 150px;">Action</th>
-                                <th><input type="checkbox"></th>
-                                <th>Product Name ^v</th>
-                                <th>Brand ^v</th>
-                                <th>QTY ^v</th>
-                                <th>Price ^v</th>
-                                <th>Rating ^v</th>
+                                <th style="width: 140px;">Action</th>
+                                <th style="width: 40px;"><input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll(this)"></th>
+                                <th>Product Name</th>
+                                <th>Brand</th>
+                                <th>QTY</th>
+                                <th>Price</th>
+                                <th>Rating</th>
                             </tr>
                         </thead>
                         <tbody id="productTableBody">
                             </tbody>
                     </table>
                 </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-3 bg-white p-3 rounded border shadow-sm">
+                    <div class="text-muted small fw-semibold" id="paginationSummary">
+                        Showing rows 0 to 0 of 0 entries matched
+                    </div>
+                    <nav aria-label="Table navigation page selection">
+                        <ul class="pagination pagination-sm mb-0" id="paginationContainer">
+                            </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="modalTitle">Add New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addProductForm">
+                        <div class="mb-3"><label class="form-label">Product Name</label><input type="text" id="addName" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Brand</label><input type="text" id="addBrand" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Quantity</label><input type="number" id="addQty" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Price (Rs.)</label><input type="number" id="addPrice" class="form-control" required></div>
+                        <div class="mb-3"><label class="form-label">Description</label><textarea id="addDesc" class="form-control" rows="2"></textarea></div>
+                        <div class="mb-3"><label class="form-label">Rating (0.0 - 5.0)</label><input type="number" step="0.1" id="addRating" class="form-control" max="5"></div>
+                        <button type="submit" class="btn btn-green w-100 fw-bold">Save Product to Database</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="compareModal" tabindex="-1" aria-labelledby="compareTitle" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title fw-bold" id="compareTitle">Product Comparison Matrix</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-3 text-center justify-content-center" id="compareCardsRowContainer">
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Close Matrix</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="emailModal" tabindex="-1" aria-labelledby="emailTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white"><h5 class="modal-title fw-bold" id="emailTitle">Send Compressed Data Report</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                <div class="modal-body">
+                    <div class="mb-3"><label class="form-label fw-semibold">Recipient</label><input type="email" id="emailRecipient" class="form-control" value="admin@stjoseph.com"></div>
+                    <div class="mb-3"><label class="form-label fw-semibold">Subject</label><input type="text" id="emailSubject" class="form-control" value="Compressed Inventory Excel Sheet Package"></div>
+                    <div class="mb-3"><label class="form-label fw-semibold">Message</label><textarea id="emailBody" class="form-control" rows="4">Hello Team,&#13;&#10;&#13;&#10;Attached please find the compressed data package file (Inventory_Report.zip) containing the full spreadsheet export matrix.</textarea></div>
+                    <div class="alert alert-info py-2 small">ℹ️ <em>The system will pack active rows down into an Excel layout before shipping.</em></div>
+                    <button onclick="sendInventoryEmail()" class="btn btn-primary w-100 fw-bold">Compress &amp; Send Now</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // Form credentials
-        let currentPassword = "admin123";
+    <script src="js/products.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/compare.js"></script>
+    <script src="js/actions.js"></script>
 
-        // Navigation Page View Control Router
+    <script>
+        let currentPassword = "admin123";
+        document.getElementById('addProductForm')?.addEventListener('submit', addNewProduct);
+
         function showSection(panelId) {
             document.getElementById('loginPage').classList.add('d-none');
             document.getElementById('forgotPanel').classList.add('d-none');
-            
-            // Handle if panel targeted is dashboard
             if(panelId === 'dashboardPage') {
                 document.getElementById('dashboardPage').classList.remove('d-none');
             } else {
@@ -146,85 +268,43 @@
             }
         }
 
-        // Login Handler Submission
         document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const userInput = document.getElementById('username').value;
-            const passInput = document.getElementById('password').value;
-            const errorDiv = document.getElementById('loginError');
-
-            if (userInput === "admin" && passInput === currentPassword) {
-                errorDiv.classList.add('d-none');
-                showSection('dashboardPage');
-                fetchProducts(); // Load table rows
+            e.preventDefault(); 
+            const userInput = document.getElementById('username').value.trim();
+            const passInput = document.getElementById('password').value.trim();
+            if (userInput === "admin" && (passInput === "admin123" || passInput === currentPassword)) {
+                document.getElementById('loginError').classList.add('d-none'); 
+                document.getElementById('adminFilterSection').classList.remove('d-none');
+                showSection('dashboardPage'); 
+                fetchProducts(); 
             } else {
-                errorDiv.classList.remove('d-none');
+                document.getElementById('loginError').classList.remove('d-none'); 
             }
         });
 
-        // Forgot Password Reset Operation
         function handlePasswordReset() {
             const answer = document.getElementById('resetAnswer').value;
             const newPassword = document.getElementById('resetNewPass').value;
-
-            // Checking the answer case-insensitively
             if (answer.trim().toLowerCase() === "st. joseph") {
-                if (newPassword.trim() === "") {
-                    alert("Please enter a valid new password!");
-                    return;
-                }
-                currentPassword = newPassword; // Overwrite current session password
-                alert("Success! Password updated inside system runtime storage.");
+                if (newPassword.trim() === "") { alert("Invalid password input!"); return; }
+                currentPassword = newPassword;
+                alert("Success! Password updated.");
                 showSection('loginPage');
-                document.getElementById('password').value = '';
             } else {
-                alert("Error: Security verification answer matches incorrectly.");
+                alert("Security answer matches incorrectly.");
             }
         }
 
-        // Logout Session Handler
         function logout() {
+            document.getElementById('adminFilterSection').classList.add('d-none');
             showSection('loginPage');
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
         }
 
-        // Live Dynamic Fetch Query out of active C# endpoints
-        async function fetchProducts() {
-            try {
-                const response = await fetch('http://localhost:5246/api/product');
-                const products = await response.json();
-                
-                const tableBody = document.getElementById('productTableBody');
-                tableBody.innerHTML = ''; 
-                
-                products.forEach(prod => {
-                    const name = prod.f_PROD_NAME || prod.F_PROD_NAME;
-                    const brand = prod.f_BRAND || prod.F_BRAND;
-                    const qty = prod.f_QTY !== undefined ? prod.f_QTY : prod.F_QTY;
-                    const price = prod.f_PRICE || prod.F_PRICE;
-                    const rating = prod.f_PROD_RATING || prod.F_PROD_RATING;
-
-                    const row = `
-                        <tr>
-                            <td>
-                                <button class="btn btn-info btn-sm text-white fw-bold me-1">Edit</button>
-                                <button class="btn btn-danger btn-sm fw-bold">Delete</button>
-                            </td>
-                            <td><input type="checkbox"></td>
-                            <td class="fw-bold text-dark">${name}</td>
-                            <td><span class="badge bg-secondary">${brand}</span></td>
-                            <td>${qty}</td>
-                            <td class="text-success fw-bold">Rs. ${Number(price).toLocaleString()}</td>
-                            <td class="text-warning">★ ${rating || 'N/A'}</td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
-            } catch (error) {
-                console.error("Error connecting to backend API framework:", error);
-            }
+        function toggleSelectAll(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('.product-select');
+            checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
         }
     </script>
 </body>
